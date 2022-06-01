@@ -1,0 +1,42 @@
+﻿@inherits LayoutComponentBase
+@using Microsoft.Extensions.Options;
+@using Microsoft.Extensions.Configuration;
+ 
+@inject IConfiguration Configuration
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <div class="main">
+        <div class="top-row px-4">
+           @* <AuthorizeView>
+                <Authorized>
+                    <a href="#">Hello, User!</a>
+                    <a href="Account/Logout">Log out</a>
+                </Authorized>
+                <NotAuthorized>
+                    <a href="@discordSignInUrl" target="_blank">SignIn</a>
+                </NotAuthorized>
+            </AuthorizeView>*@
+            <a href="@discordSignInUrl" target="_blank">SignIn</a>
+        </div>
+
+        <div class="content px-4">
+            @Body
+        </div>
+    </div>
+</div>
+
+@code {
+    string discordSignInUrl = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        discordSignInUrl = "https://discordapp.com/api/oauth2/authorize?response_type=code&client_id="
+            + Configuration.GetSection("Discord")["AppId"]
+            + "&scope=identify%20guilds.join&state=15773059ghq9183habn&redirect_uri="
+            + Configuration.GetSection("Discord")["RedirectUrl"] + "";
+    }
+}
