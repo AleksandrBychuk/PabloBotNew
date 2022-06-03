@@ -1,9 +1,13 @@
 using Admin.Models;
 using Admin.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -12,7 +16,13 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Security.Claims;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace Admin
 {
@@ -32,7 +42,8 @@ namespace Admin
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
-            services.AddDbContext<BotContext>(options => options.UseNpgsql(Configuration.GetConnectionString("PabloBotDatabase")));
+            services.AddDbContext<BotContext>(options => 
+                options.UseNpgsql(Configuration.GetConnectionString("PabloBotDatabase")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,7 +62,7 @@ namespace Admin
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+          
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
